@@ -10,7 +10,6 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var appCoordinator: AppCoordinator?
-    var appConfiguration: AppConfiguration?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         let configurations: [AppConfiguration] =
@@ -20,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 .starships(URL(string: "https://swapi.dev/api/starships/3")!),
             ]
         guard let randomConfiguration = configurations.randomElement() else { return }
+        NetworkService.request(for: randomConfiguration)
 
         guard let scene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: scene)

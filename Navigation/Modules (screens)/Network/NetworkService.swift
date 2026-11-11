@@ -30,6 +30,16 @@ struct NetworkService {
                 print("No data")
                 return
             }
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Status code: \(httpResponse.statusCode)")
+                print("Headers: \(httpResponse.allHeaderFields)")
+            }
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Data: \(jsonString)")
+            }
         }
+        task.resume()
     }
 }
+
+//If there is no intternet - i get the error -1001 (The request timed out) or -1009 (The Internet connection appears to be offline).
