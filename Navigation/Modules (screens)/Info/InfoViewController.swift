@@ -8,11 +8,25 @@
 import UIKit
 
 class InfoViewController: UIViewController {
-    
     private lazy var infoButton: CustomButton = {
-        let button = CustomButton(title: "Hi! This is a new screen.", titleColor: .systemBlue)
-     
-        return button
+        let infoButton = CustomButton(title: "Hi! This is a new screen.", titleColor: .systemBlue)
+
+        infoButton.tapOnButton = { [weak self] in self?.infoButtonPressed() }
+
+        return infoButton
+    }()
+
+    private lazy var titleLabel: UILabel = {
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.clipsToBounds = true
+        titleLabel.backgroundColor = .vk
+        titleLabel.layer.cornerRadius = 30
+        titleLabel.textColor = .white
+        titleLabel.font = .systemFont(ofSize: 17, weight: .bold)
+        titleLabel.textAlignment = .center
+
+        return titleLabel
     }()
 
     override func viewDidLoad() {
@@ -21,7 +35,24 @@ class InfoViewController: UIViewController {
         setupView()
         addSubviews()
         setupConstraints()
-        buttonActionSetup()
+        fetchData()
+    }
+
+    func fetchData() {
+        let url = URL(string: "https://jsonplaceholder.typicode.com/todos/1")!
+        CodableNetworkService.fetchData(from: url) { result in
+            switch result {
+            case let .success(data):
+                let parcer = Parcer()
+                if let user = parcer.parce(data: data) {
+                    DispatchQueue.main.async {
+                        self.titleLabel.text = user.title
+                    }
+                }
+            case let .failure(error):
+                print("Error \(error.localizedDescription)")
+            }
+        }
     }
 
     func setupView() {
@@ -31,20 +62,26 @@ class InfoViewController: UIViewController {
 
     func addSubviews() {
         view.addSubview(infoButton)
+        view.addSubview(titleLabel)
+    }
+
+    @objc private func infoButtonPressed() {
+        showAlert()
     }
 
     func setupConstraints() {
         NSLayoutConstraint.activate([
             infoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             infoButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            titleLabel.topAnchor.constraint(equalTo: infoButton.bottomAnchor, constant: 25),
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            titleLabel.widthAnchor.constraint(equalToConstant: 300),
+            titleLabel.heightAnchor.constraint(equalToConstant: 100),
         ])
     }
 
-    func buttonActionSetup() {
-        infoButton.addTarget(self, action: #selector(infoButtonPressed), for: .touchUpInside)
-    }
-
-    @objc private func infoButtonPressed() {
+    func showAlert() {
         let alert = UIAlertController(
             title: "Buttons are tappable!",
             message: "Some of the buttons below will be tapped.",
