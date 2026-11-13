@@ -15,12 +15,37 @@ class FeedViewController: UIViewController {
 
     private lazy var firstButton: CustomButton = {
         let firstButton = CustomButton(title: "View the post", titleColor: .white)
+        firstButton.layer.cornerRadius = 20
+
+        guard let bluePixel = UIImage(named: "bluePixel") else {
+            return firstButton
+        }
+        let dimmedBluePixel = imageWithAlpha(bluePixel, alpha: 0.8)
+        firstButton.setBackgroundImage(bluePixel, for: .normal)
+        firstButton.setBackgroundImage(dimmedBluePixel, for: .highlighted)
+        firstButton.setBackgroundImage(dimmedBluePixel, for: .selected)
+        firstButton.setBackgroundImage(dimmedBluePixel, for: .disabled)
+        
+        firstButton.tapOnButton = { [weak self] in self?.buttonPressed() }
 
         return firstButton
     }()
 
     private lazy var secondButton: CustomButton = {
         let secondButton = CustomButton(title: "View the post", titleColor: .white)
+        secondButton.backgroundColor = .vk
+        secondButton.layer.cornerRadius = 20
+
+        guard let bluePixel = UIImage(named: "bluePixel") else {
+            return secondButton
+        }
+        let dimmedBluePixel = imageWithAlpha(bluePixel, alpha: 0.8)
+        secondButton.setBackgroundImage(bluePixel, for: .normal)
+        secondButton.setBackgroundImage(dimmedBluePixel, for: .highlighted)
+        secondButton.setBackgroundImage(dimmedBluePixel, for: .selected)
+        secondButton.setBackgroundImage(dimmedBluePixel, for: .disabled)
+        
+        secondButton.tapOnButton = { [weak self] in self?.buttonPressed() }
 
         return secondButton
     }()
@@ -79,13 +104,12 @@ class FeedViewController: UIViewController {
         setupView()
         addSubviews()
         setupConstraints()
-        setupButtonActions()
         setupBinding()
     }
 
     func setupView() {
         view.backgroundColor = .systemBlue
-        self.title = "User feed"
+        title = "User feed"
     }
 
     func addSubviews() {
@@ -127,15 +151,16 @@ class FeedViewController: UIViewController {
             checkGuessButton.widthAnchor.constraint(equalToConstant: 300),
             checkGuessButton.heightAnchor.constraint(equalToConstant: 50),
 
+            firstButton.widthAnchor.constraint(equalToConstant: 200),
+            firstButton.heightAnchor.constraint(equalToConstant: 80),
+
+            secondButton.widthAnchor.constraint(equalTo: firstButton.widthAnchor),
+            secondButton.heightAnchor.constraint(equalTo: firstButton.heightAnchor),
+
             buttonsStackView.centerXAnchor.constraint(
                 equalTo: safeAreaLayoutGuide.centerXAnchor),
             buttonsStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -100),
         ])
-    }
-
-    func setupButtonActions() {
-        firstButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-        secondButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
     }
 
     @objc func buttonPressed() {
@@ -169,5 +194,12 @@ class FeedViewController: UIViewController {
     private func handleEmptyInput() {
         showAlert(message: "Please, tell us the secret word.")
         checkLabel.backgroundColor = .yellow
+    }
+
+    private func imageWithAlpha(_ image: UIImage, alpha: CGFloat) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: image.size)
+
+        return renderer.image { _ in image.draw(at: .zero, blendMode: .normal, alpha: alpha)
+        }
     }
 }

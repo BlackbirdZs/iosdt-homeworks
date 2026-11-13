@@ -8,8 +8,18 @@
 import UIKit
 
 class InfoViewController: UIViewController {
+
     private lazy var infoButton: CustomButton = {
-        let infoButton = CustomButton(title: "Hi! This is a new screen.", titleColor: .systemBlue)
+        let infoButton = CustomButton(title: "Hi! This is a new screen.", titleColor: .white)
+        infoButton.layer.cornerRadius = 20
+        guard let bluePixel = UIImage(named: "bluePixel") else {
+            return infoButton
+        }
+        let dimmedBluePixel = imageWithAlpha(bluePixel, alpha: 0.8)
+        infoButton.setBackgroundImage(bluePixel, for: .normal)
+        infoButton.setBackgroundImage(dimmedBluePixel, for: .highlighted)
+        infoButton.setBackgroundImage(dimmedBluePixel, for: .selected)
+        infoButton.setBackgroundImage(dimmedBluePixel, for: .disabled)
 
         infoButton.tapOnButton = { [weak self] in self?.infoButtonPressed() }
 
@@ -27,6 +37,19 @@ class InfoViewController: UIViewController {
         titleLabel.textAlignment = .center
 
         return titleLabel
+    }()
+
+    private lazy var planetLabel: UILabel = {
+        let planetLabel = UILabel()
+        planetLabel.translatesAutoresizingMaskIntoConstraints = false
+        planetLabel.clipsToBounds = true
+        planetLabel.backgroundColor = .vk
+        planetLabel.layer.cornerRadius = 30
+        planetLabel.textColor = .white
+        planetLabel.font = .systemFont(ofSize: 17, weight: .bold)
+        planetLabel.textAlignment = .center
+
+        return planetLabel
     }()
 
     override func viewDidLoad() {
@@ -63,6 +86,7 @@ class InfoViewController: UIViewController {
     func addSubviews() {
         view.addSubview(infoButton)
         view.addSubview(titleLabel)
+        view.addSubview(planetLabel)
     }
 
     @objc private func infoButtonPressed() {
@@ -73,11 +97,18 @@ class InfoViewController: UIViewController {
         NSLayoutConstraint.activate([
             infoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             infoButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            infoButton.widthAnchor.constraint(equalToConstant: 220),
+            infoButton.heightAnchor.constraint(equalToConstant: 80),
 
             titleLabel.topAnchor.constraint(equalTo: infoButton.bottomAnchor, constant: 25),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             titleLabel.widthAnchor.constraint(equalToConstant: 300),
             titleLabel.heightAnchor.constraint(equalToConstant: 100),
+
+            planetLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15),
+            planetLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            planetLabel.widthAnchor.constraint(equalToConstant: 300),
+            planetLabel.heightAnchor.constraint(equalToConstant: 100),
         ])
     }
 
@@ -101,5 +132,12 @@ class InfoViewController: UIViewController {
         alert.addAction(cancelAction)
 
         present(alert, animated: true)
+    }
+
+    private func imageWithAlpha(_ image: UIImage, alpha: CGFloat) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: image.size)
+
+        return renderer.image { _ in image.draw(at: .zero, blendMode: .normal, alpha: alpha)
+        }
     }
 }

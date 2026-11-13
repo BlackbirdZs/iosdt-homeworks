@@ -34,6 +34,7 @@ class PhotosViewController: UIViewController {
         super.viewDidLoad()
 
         setupView()
+        addSubviews()
         setupCollectionView()
         setupLayouts()
         processImages()
@@ -66,11 +67,14 @@ class PhotosViewController: UIViewController {
 
     func setupView() {
         view.backgroundColor = .systemGray6
-        photosCollectionView.backgroundColor = .white
+    }
+
+    func addSubviews() {
+        view.addSubview(photosCollectionView)
     }
 
     func setupCollectionView() {
-        view.addSubview(photosCollectionView)
+        photosCollectionView.backgroundColor = .white
         photosCollectionView.delegate = self
         photosCollectionView.dataSource = self
     }
@@ -146,11 +150,11 @@ extension PhotosViewController: UICollectionViewDelegateFlowLayout {
 
 /*
  Time results for the .noir filter and array of 20 pics:
- 
+
  QoS .userInteractive: ~0.40 sec (12 threads used)
  QoS .userInitiated:   ~0.43 sec (11 threads used)
  QoS .utility:         ~0.43 sec (13 threads used)
  QoS .background:      ~1.29 sec (12 threads used)
- 
+
  Conclusion: The higher the priority (QoS), the faster the task is executed because the system allocates more CPU time to it, even if the number of threads remains the same (in my tests, it was around 11-13). For example, .userInteractive took 0.4 seconds, while .background took 1.29 seconds.
  */
