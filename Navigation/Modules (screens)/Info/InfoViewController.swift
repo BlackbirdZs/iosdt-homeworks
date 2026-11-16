@@ -8,6 +8,17 @@
 import UIKit
 
 class InfoViewController: UIViewController {
+    var residentNames: [String] = []
+
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView(
+            frame: .zero,
+            style: .plain)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+
+        return tableView
+    }()
+
     private lazy var infoButton: CustomButton = {
         let infoButton = CustomButton(title: "Hi! This is a new screen.", titleColor: .white)
         infoButton.layer.cornerRadius = 20
@@ -56,6 +67,7 @@ class InfoViewController: UIViewController {
 
         setupView()
         addSubviews()
+        tuneTableView()
         setupConstraints()
         fetchData()
         fetchPlanetData()
@@ -88,6 +100,33 @@ class InfoViewController: UIViewController {
                 if let planet = try? decoder.decode(JsonPlanet.self, from: data) {
                     DispatchQueue.main.async {
                         self.planetLabel.text = "Orbtal period: \(planet.orbitalPeriod)"
+                        self.residentNames.removeAll()
+                    }
+
+                    let group = DispatchGroup()
+                    for residentUrl in planet.residents {
+                        group.enter()
+                        guard let url = URL(string: residentUrl) else {
+                            group.leave()
+                            continue
+                        }
+                        CodableNetworkService.fetchData(from: url) { result in
+                            switch result {
+                            case let .success(data):
+                                if let resident = try? decoder.decode(JsonResidentName.self, from: data) {
+                                    DispatchQueue.main.async {
+                                        self.residentNames.append(resident.name)
+                                    }
+                                }
+                            case let .failure(error):
+                                print(error.localizedDescription)
+                            }
+                            group.leave()
+                        }
+                    }
+
+                    group.notify(queue: .main) {
+                        self.tableView.reloadData()
                     }
                 }
             case let .failure(error):
@@ -102,9 +141,19 @@ class InfoViewController: UIViewController {
     }
 
     func addSubviews() {
+        view.addSubview(tableView)
         view.addSubview(infoButton)
         view.addSubview(titleLabel)
         view.addSubview(planetLabel)
+    }
+
+    func tuneTableView() {
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.backgroundColor = .clear
+        tableView.estimatedRowHeight = 100
+        tableView.register(ResidentTableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.delegate = self
+        tableView.dataSource = self
     }
 
     @objc private func infoButtonPressed() {
@@ -112,7 +161,14 @@ class InfoViewController: UIViewController {
     }
 
     func setupConstraints() {
+        let safeArea = view.safeAreaLayoutGuide
+
         NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 15),
+            tableView.bottomAnchor.constraint(equalTo: infoButton.topAnchor, constant: -15),
+            tableView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 15),
+            tableView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -15),
+
             infoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             infoButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             infoButton.widthAnchor.constraint(equalToConstant: 220),
@@ -159,3 +215,23 @@ class InfoViewController: UIViewController {
         }
     }
 }
+
+extension InfoViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        residentNames.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let nameCell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ResidentTableViewCell else {
+            fatalError("could not dequeueReusableCell")
+        }
+        nameCell.configure(with: residentNames[indexPath.row])
+        return nameCell
+    }
+}
+
+extension InfoViewController: UITableViewDelegate {}
