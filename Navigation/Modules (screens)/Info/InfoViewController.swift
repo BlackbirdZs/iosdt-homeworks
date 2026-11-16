@@ -8,7 +8,6 @@
 import UIKit
 
 class InfoViewController: UIViewController {
-
     private lazy var infoButton: CustomButton = {
         let infoButton = CustomButton(title: "Hi! This is a new screen.", titleColor: .white)
         infoButton.layer.cornerRadius = 20
@@ -59,21 +58,40 @@ class InfoViewController: UIViewController {
         addSubviews()
         setupConstraints()
         fetchData()
+        fetchPlanetData()
     }
 
     func fetchData() {
-        let url = URL(string: "https://jsonplaceholder.typicode.com/todos/1")!
+        guard let url = URL(string: "https://jsonplaceholder.typicode.com/todos/1") else { return }
         CodableNetworkService.fetchData(from: url) { result in
             switch result {
             case let .success(data):
-                let parcer = Parcer()
-                if let user = parcer.parce(data: data) {
+                let parser = Parser()
+                if let user = parser.parse(data: data) {
                     DispatchQueue.main.async {
                         self.titleLabel.text = user.title
                     }
                 }
             case let .failure(error):
                 print("Error \(error.localizedDescription)")
+            }
+        }
+    }
+
+    func fetchPlanetData() {
+        guard let url = URL(string: "https://swapi.dev/api/planets/1") else { return }
+        let decoder = JSONDecoder()
+
+        CodableNetworkService.fetchData(from: url) { result in
+            switch result {
+            case let .success(data):
+                if let planet = try? decoder.decode(JsonPlanet.self, from: data) {
+                    DispatchQueue.main.async {
+                        self.planetLabel.text = "Orbtal period: \(planet.orbitalPeriod)"
+                    }
+                }
+            case let .failure(error):
+                print(error.localizedDescription)
             }
         }
     }

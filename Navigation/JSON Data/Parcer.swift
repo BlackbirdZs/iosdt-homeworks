@@ -7,8 +7,8 @@
 
 import Foundation
 
-class Parcer {
-    func parce(data: Data) -> JsonUser? {
+class Parser {
+    func parse(data: Data) -> JsonUser? {
         do {
             let recievedData = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as? [String: Any]
             guard let userId = recievedData?["userId"] as? Int else { return nil }
