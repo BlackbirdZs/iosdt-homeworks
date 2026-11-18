@@ -30,13 +30,6 @@ class LogInViewController: UIViewController {
         return labelImageView
     }()
 
-    private func imageWithAlpha(_ image: UIImage, alpha: CGFloat) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: image.size)
-
-        return renderer.image { _ in image.draw(at: .zero, blendMode: .normal, alpha: alpha)
-        }
-    }
-
     lazy var loginButton: CustomButton = {
         let loginButton = CustomButton(title: "Log in", titleColor: .white)
         loginButton.layer.cornerRadius = 10
@@ -347,15 +340,22 @@ class LogInViewController: UIViewController {
                     self?.activityIndicator.stopAnimating()
                     self?.generatePasswordButton.isEnabled = true
                     switch result {
-                    case .success(let foundPassword):
+                    case let .success(foundPassword):
                         self?.passwordTextField.text = foundPassword
                         self?.passwordTextField.isSecureTextEntry = false
-                    case .failure(let error):
+                    case let .failure(error):
                         self?.showAlert(message: "Password generation error: \(error)")
                     }
                     self?.loginButton.isEnabled = true
                 }
             }
+        }
+    }
+
+    private func imageWithAlpha(_ image: UIImage, alpha: CGFloat) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: image.size)
+
+        return renderer.image { _ in image.draw(at: .zero, blendMode: .normal, alpha: alpha)
         }
     }
 }
