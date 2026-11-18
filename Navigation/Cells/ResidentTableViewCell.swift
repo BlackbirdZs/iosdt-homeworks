@@ -17,7 +17,6 @@ class ResidentTableViewCell: UITableViewCell {
             style: .default,
             reuseIdentifier: reuseIdentifier
         )
-        // methods
         tuneView()
         addSubviews()
         setupConstraints()
