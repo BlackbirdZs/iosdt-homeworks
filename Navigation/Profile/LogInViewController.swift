@@ -3,6 +3,7 @@ import UIKit
 
 class LogInViewController: UIViewController {
     weak var coordinator: LoginCoordinator?
+    var delegate = LoginViewControllerDelegate?.self
 
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -302,26 +303,40 @@ class LogInViewController: UIViewController {
         }
         return user
     }
+    
+    private func validInput(email: String, password: String) -> Bool {
+        let cleanedEmail = email.trimmingCharacters(in: .whitespaces)
+        let cleanedPassword = password.trimmingCharacters(in: .whitespaces)
+        return !cleanedEmail.isEmpty && !cleanedPassword.isEmpty
+    }
 
     @objc func loginButtonPressed() {
-        guard let loginText = loginTextField.text else { return }
-        guard let passwordText = passwordTextField.text else { return }
+        guard let email = loginTextField.text,
+        let password = passwordTextField.text else { return }
 
-        do {
-            let user = try validateUser(login: loginText, password: passwordText)
-            coordinator?.openProfile(user)
-        } catch let error as AuthError {
-            switch error {
-            case .emptyFields:
-                showAlert(message: "Please, fill all the fields")
-            case .invalidLoginOrPassword:
-                showAlert(message: "Invalid login or password")
-            case .noUser:
-                showAlert(message: "No user found")
-            }
-        } catch {
-            showAlert(message: "Unknown error occured")
+        guard validInput(email: email, password: password) else {
+            showAlert(message: "Please, fill all the fields")
+            return
         }
+        
+
+        
+        
+//        do {
+//            let user = try validateUser(login: loginText, password: passwordText)
+//            coordinator?.openProfile(user)
+//        } catch let error as AuthError {
+//            switch error {
+//            case .emptyFields:
+//                showAlert(message: "Please, fill all the fields")
+//            case .invalidLoginOrPassword:
+//                showAlert(message: "Invalid login or password")
+//            case .noUser:
+//                showAlert(message: "No user found")
+//            }
+//        } catch {
+//            showAlert(message: "Unknown error occured")
+//        }
     }
 
     @objc func randomPassButtonPressed() {
