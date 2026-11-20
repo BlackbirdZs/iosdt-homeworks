@@ -21,8 +21,8 @@ class LoginCoordinator: Coordinator {
         let loginVc = LogInViewController()
         loginVc.coordinator = self
 
-        let factory = MyLoginFactory()
-        loginVc.loginDelegate = factory.makeLoginInspector()
+        let inspector = LoginInspector()
+        loginVc.loginDelegate = inspector
 
         navigationController.pushViewController(loginVc, animated: false)
     }
