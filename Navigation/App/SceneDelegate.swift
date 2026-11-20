@@ -5,6 +5,7 @@
 //  Created by Anton Kruglov on 31.07.2026.
 //
 
+import FirebaseAuth
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -19,12 +20,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 .starships(URL(string: "https://swapi.dev/api/starships/3")!),
             ]
         guard let randomConfiguration = configurations.randomElement() else { return }
-        NetworkService.request(for: randomConfiguration)
+//        NetworkService.request(for: randomConfiguration)
 
         guard let scene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: scene)
         appCoordinator = AppCoordinator(window: window)
         appCoordinator?.start()
         self.window = window
+    }
+
+    func sceneDidDisconnect(_ scene: UIScene) {
+        try? Auth.auth().signOut()
     }
 }
