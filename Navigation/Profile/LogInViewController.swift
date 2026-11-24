@@ -89,7 +89,7 @@ class LogInViewController: UIViewController {
         let loginTextField = UITextField()
         loginTextField.translatesAutoresizingMaskIntoConstraints = false
         loginTextField.placeholder = "Email or phone"
-        loginTextField.text = "admin"
+        loginTextField.text = "test@mail.com"
         loginTextField.font = .systemFont(ofSize: 16)
         loginTextField.textColor = .black
         loginTextField.tintColor = UIColor(named: "VKColor")
@@ -100,10 +100,9 @@ class LogInViewController: UIViewController {
 
     lazy var passwordTextField: UITextField = {
         let passwordTextField = UITextField()
-
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         passwordTextField.placeholder = "Password"
-        passwordTextField.text = "admin"
+        passwordTextField.text = "123456"
         passwordTextField.font = .systemFont(ofSize: 16)
         passwordTextField.textColor = .black
         passwordTextField.tintColor = UIColor(named: "VKColor")
@@ -303,25 +302,52 @@ class LogInViewController: UIViewController {
         return user
     }
 
-    @objc func loginButtonPressed() {
-        guard let loginText = loginTextField.text else { return }
-        guard let passwordText = passwordTextField.text else { return }
+    private func validInput(email: String, password: String) -> Bool {
+        let cleanedEmail = email.trimmingCharacters(in: .whitespaces)
+        let cleanedPassword = password.trimmingCharacters(in: .whitespaces)
+        return !cleanedEmail.isEmpty && !cleanedPassword.isEmpty
+    }
 
-        do {
-            let user = try validateUser(login: loginText, password: passwordText)
-            coordinator?.openProfile(user)
-        } catch let error as AuthError {
-            switch error {
-            case .emptyFields:
-                showAlert(message: "Please, fill all the fields")
-            case .invalidLoginOrPassword:
-                showAlert(message: "Invalid login or password")
-            case .noUser:
-                showAlert(message: "No user found")
+    func loginCheck(email: String, password: String) {
+        loginDelegate?.checkCredentials(email: email, password: password) { [weak self] result in
+            switch result {
+            case .success:
+                guard let self = self else { return }
+                let user = User(login: email, fullName: "User", status: "Online", avatar: UIImage(named: "avatar") ?? UIImage()
+                )
+                DispatchQueue.main.async {
+                    self.coordinator?.openProfile(user)
+                }
+            case let .failure(error):
+                let nsError = error as NSError
+                if nsError.code == 17011 {
+                    self?.loginDelegate?.signUp(email: email, password: password) { [weak self] signUpResult in
+                        switch signUpResult {
+                        case .success:
+                            guard let self = self else { return }
+                            let user = User(login: email, fullName: "User", status: "Online", avatar: UIImage(named: "avatar") ?? UIImage()
+                            )
+                            DispatchQueue.main.async {
+                                self.coordinator?.openProfile(user)
+                            }
+                        case let .failure(signUpError):
+                            DispatchQueue.main.async {
+                                self?.showAlert(message: signUpError.localizedDescription)
+                            }
+                        }
+                    }
+                }
             }
-        } catch {
-            showAlert(message: "Unknown error occured")
         }
+    }
+
+    @objc func loginButtonPressed() {
+        guard let email = loginTextField.text, let password = passwordTextField.text else { return }
+        guard validInput(email: email, password: password) else {
+            showAlert(message: "Please, fill all the fields")
+            return
+        }
+        loginCheck(email: email, password: password)
     }
 
     @objc func randomPassButtonPressed() {

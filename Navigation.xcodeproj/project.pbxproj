@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B25B20BD30AF2665002EA7B6 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B25B20BC30AF2665002EA7B6 /* FirebaseAuth */; };
+		B25B20BF30AF266A002EA7B6 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = B25B20BE30AF266A002EA7B6 /* FirebaseCore */; };
+		B25B20C630AF2FF0002EA7B6 /* CheckerServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25B20C530AF2FF0002EA7B6 /* CheckerServiceProtocol.swift */; };
+		B25B20C830AF3677002EA7B6 /* CheckerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25B20C730AF3677002EA7B6 /* CheckerService.swift */; };
 		B2AE25003061869F0023A93E /* StorageService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2AE24F83061869F0023A93E /* StorageService.framework */; };
 		B2AE25013061869F0023A93E /* StorageService.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2AE24F83061869F0023A93E /* StorageService.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B2C816A4306E7478004792B7 /* iOSIntPackage in Frameworks */ = {isa = PBXBuildFile; productRef = B2C816A3306E7478004792B7 /* iOSIntPackage */; };
@@ -37,6 +41,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B25B20C530AF2FF0002EA7B6 /* CheckerServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckerServiceProtocol.swift; sourceTree = "<group>"; };
+		B25B20C730AF3677002EA7B6 /* CheckerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckerService.swift; sourceTree = "<group>"; };
 		B2AE24F83061869F0023A93E /* StorageService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StorageService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2D05846301CBB650066DDBE /* Navigation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Navigation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -46,6 +52,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"Modules (screens)/Feed/Post.swift",
+				"Services and data/GoogleService-Info.plist",
 			);
 			target = B2AE24F73061869F0023A93E /* StorageService */;
 		};
@@ -89,6 +96,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2AE25003061869F0023A93E /* StorageService.framework in Frameworks */,
+				B25B20BD30AF2665002EA7B6 /* FirebaseAuth in Frameworks */,
+				B25B20BF30AF266A002EA7B6 /* FirebaseCore in Frameworks */,
 				B2C816A4306E7478004792B7 /* iOSIntPackage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -106,6 +115,8 @@
 		B2D0583D301CBB650066DDBE = {
 			isa = PBXGroup;
 			children = (
+				B25B20C530AF2FF0002EA7B6 /* CheckerServiceProtocol.swift */,
+				B25B20C730AF3677002EA7B6 /* CheckerService.swift */,
 				B2D05848301CBB650066DDBE /* Navigation */,
 				B2AE24F93061869F0023A93E /* StorageService */,
 				B2C816A2306E7478004792B7 /* Frameworks */,
@@ -178,6 +189,8 @@
 			name = Navigation;
 			packageProductDependencies = (
 				B2C816A3306E7478004792B7 /* iOSIntPackage */,
+				B25B20BC30AF2665002EA7B6 /* FirebaseAuth */,
+				B25B20BE30AF266A002EA7B6 /* FirebaseCore */,
 			);
 			productName = Navigation;
 			productReference = B2D05846301CBB650066DDBE /* Navigation.app */;
@@ -212,6 +225,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				B2C816A1306E6D31004792B7 /* XCRemoteSwiftPackageReference "iOSIntPackage" */,
+				B2A821AC30AF0E5D00223BAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B2D05847301CBB650066DDBE /* Products */;
@@ -253,6 +267,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B25B20C830AF3677002EA7B6 /* CheckerService.swift in Sources */,
+				B25B20C630AF2FF0002EA7B6 /* CheckerServiceProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,6 +368,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -389,6 +406,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -577,6 +595,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B2A821AC30AF0E5D00223BAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.2.0;
+			};
+		};
 		B2C816A1306E6D31004792B7 /* XCRemoteSwiftPackageReference "iOSIntPackage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TrueMax/iOSIntPackage.git";
@@ -588,6 +614,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B25B20BC30AF2665002EA7B6 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B2A821AC30AF0E5D00223BAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		B25B20BE30AF266A002EA7B6 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B2A821AC30AF0E5D00223BAB /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
 		B2C816A3306E7478004792B7 /* iOSIntPackage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B2C816A1306E6D31004792B7 /* XCRemoteSwiftPackageReference "iOSIntPackage" */;
