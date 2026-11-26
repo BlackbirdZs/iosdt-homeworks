@@ -10,6 +10,15 @@
       "Base",
     ],
   },
+  "packages": [
+    {
+      "kind": "remote",
+      "repository": "https://github.com/evgenyneu/keychain-swift.git",
+      "version": {
+        "up-to-next-major-version": "24.0.0",
+      },
+    },
+  ],
   "files": [
     {
       "kind": "folder",
@@ -43,6 +52,13 @@
         "compile-sources",
         "frameworks",
         "resources",
+      ],
+      "package-product-members": [
+        {
+          "package": "keychain-swift",
+          "product-name": "KeychainSwift",
+          "build-phase": { "build-phase": "frameworks" },
+        },
       ],
       "build-settings": {
         "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",

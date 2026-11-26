@@ -14,5 +14,5 @@ protocol FileManagerServiceProtocol {
     func createDirectory(with name: String)
     func createFile(with data: Data, name: String)
     func removeContent(at index: Int)
-    func isItemInFolder(index: Int) -> Bool 
+    func isItemInFolder(index: Int) -> Bool
 }
