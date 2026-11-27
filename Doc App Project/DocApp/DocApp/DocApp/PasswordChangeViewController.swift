@@ -100,7 +100,6 @@ class PasswordChangeViewController: UIViewController {
         keyChain.updatePassword(newPassword)
         showAlert(message: "Password successfully updated!")
         resetState()
-        dismiss(animated: true)
     }
 
     func setupView() {
