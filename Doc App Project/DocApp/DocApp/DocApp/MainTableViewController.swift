@@ -10,6 +10,14 @@ import UIKit
 class MainTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var fileManagerService: FileManagerServiceProtocol = FileManagerService(path: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
 
+    private var isSortingEnabled = true
+    private var isPhotoSizeEnabled = true
+    
+    var displayedItems: [String] {
+        let items = fileManagerService.contentsOfDirectory
+        return isSortingEnabled ? items.sorted() : items.sorted(by: >)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,6 +35,13 @@ class MainTableViewController: UITableViewController, UIImagePickerControllerDel
     func setupView() {
         view.backgroundColor = .systemBackground
         title = fileManagerService.title
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        isSortingEnabled = UserDefaults.standard.bool(forKey: "isSortingEnabled")
+        isPhotoSizeEnabled = UserDefaults.standard.bool(forKey: "isPhotoSizeEnabled")
+        tableView.reloadData()
     }
 
     func setupNavItems() {
@@ -53,10 +68,23 @@ class MainTableViewController: UITableViewController, UIImagePickerControllerDel
     }
 
     @objc func didTapPlus() {
-        colorPickerSetup()
+        imagePickerSetup()
     }
 
-    func colorPickerSetup() {
+    func getFileSize(at path: String) -> String {
+        let fileManager = FileManager.default
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: path)
+            if let size = attributes[.size] as? Int64 {
+                return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
+            }
+        } catch {
+            print("error: \(error.localizedDescription)")
+        }
+        return ""
+    }
+
+    func imagePickerSetup() {
         let imagePicker = UIImagePickerController()
         imagePicker.sourceType = .photoLibrary
         imagePicker.allowsEditing = true
@@ -76,14 +104,25 @@ class MainTableViewController: UITableViewController, UIImagePickerControllerDel
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return fileManagerService.contentsOfDirectory.count
+        return displayedItems.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
+        let itemName = displayedItems[indexPath.row]
         var cellConfig = UIListContentConfiguration.cell()
-        let isFolder = fileManagerService.isItemInFolder(index: indexPath.row)
-        cellConfig.text = fileManagerService.contentsOfDirectory[indexPath.row]
+        let filePath = fileManagerService.path + "/" + itemName
+        var isFolder = false
+        var objBool: ObjCBool = false
+        FileManager.default.fileExists(atPath: filePath, isDirectory: &objBool)
+        isFolder = objBool.boolValue
+        
+        if isPhotoSizeEnabled && !isFolder {
+            let size = getFileSize(at: filePath)
+            cellConfig.text = "\(itemName) (\(size))"
+        } else {
+            cellConfig.text = itemName
+        }
         cellConfig.image = UIImage(systemName: isFolder ? "folder.fill" : "photo.fill")
         cell.contentConfiguration = cellConfig
         cell.selectionStyle = .default
@@ -100,43 +139,54 @@ class MainTableViewController: UITableViewController, UIImagePickerControllerDel
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            fileManagerService.removeContent(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            let itemName = displayedItems[indexPath.row]
+            if let originalIndex = fileManagerService.contentsOfDirectory.firstIndex(of: itemName) {
+                fileManagerService.removeContent(at: originalIndex)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            }
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if fileManagerService.isItemInFolder(index: indexPath.row) {
+        let itemName = displayedItems[indexPath.row]
+        let filePath = fileManagerService.path + "/" + itemName
+        var isFolder = false
+        var objBool: ObjCBool = false
+        FileManager.default.fileExists(atPath: filePath, isDirectory: &objBool)
+        isFolder = objBool.boolValue
+        if isFolder {
             let mainVc = MainTableViewController()
-            mainVc.fileManagerService = FileManagerService(path: fileManagerService.path + "/" + fileManagerService.contentsOfDirectory[indexPath.row])
+            mainVc.fileManagerService = FileManagerService(path: filePath)
             navigationController?.pushViewController(mainVc, animated: true)
+        } else {
+            TextPicker.shared.showMessage(in: self, message: "File tapped", title: "Attention")
         }
     }
-
-    /*
-     // Override to support rearranging the table view.
-     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-     }
-     */
-
-    /*
-     // Override to support conditional rearranging of the table view.
-     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-         // Return false if you do not want the item to be re-orderable.
-         return true
-     }
-     */
-
-    /*
-     // MARK: - Navigation
-
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-         // Get the new view controller using segue.destination.
-         // Pass the selected object to the new view controller.
-     }
-     */
 }
+
+/*
+ // Override to support rearranging the table view.
+ override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
+
+ }
+ */
+
+/*
+ // Override to support conditional rearranging of the table view.
+ override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+     // Return false if you do not want the item to be re-orderable.
+     return true
+ }
+ */
+
+/*
+ // MARK: - Navigation
+
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destination.
+     // Pass the selected object to the new view controller.
+ }
+ */
