@@ -15,14 +15,15 @@ class LoginViewController: UIViewController {
     private var firstPassword: String?
 
     private lazy var passwordTextField: UITextField = {
-        let loginTextField = UITextField()
-        loginTextField.translatesAutoresizingMaskIntoConstraints = false
-        loginTextField.borderStyle = .roundedRect
-        loginTextField.placeholder = "Password"
-        loginTextField.textColor = .black
-        loginTextField.backgroundColor = .systemGray4
+        let passwordTextField = UITextField()
+        passwordTextField.translatesAutoresizingMaskIntoConstraints = false
+        passwordTextField.borderStyle = .roundedRect
+        passwordTextField.placeholder = "Password"
+        passwordTextField.isSecureTextEntry = true
+        passwordTextField.textColor = .black
+        passwordTextField.backgroundColor = .systemGray4
 
-        return loginTextField
+        return passwordTextField
     }()
 
     private lazy var loginButton: UIButton = {
@@ -49,14 +50,14 @@ class LoginViewController: UIViewController {
 
     func showTabBar() {
         let tableNav = UINavigationController(rootViewController: MainTableViewController())
-        let settingsNav = UINavigationController(rootViewController: SettingsViewController())
+        let settingsNav = UINavigationController(rootViewController: SettingsTableViewController())
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [tableNav, settingsNav]
         tabBarController.tabBar.tintColor = .systemBlue
         tabBarController.tabBar.unselectedItemTintColor = .systemGray
         tabBarController.selectedIndex = 0
         tableNav.tabBarItem.title = "Files"
-        tableNav.tabBarItem.image = UIImage(systemName: "folder")
+        tableNav.tabBarItem.image = UIImage(systemName: "folder.fill")
         settingsNav.tabBarItem.title = "Settings"
         settingsNav.tabBarItem.image = UIImage(systemName: "gear")
         view.window?.rootViewController = tabBarController

@@ -15,7 +15,7 @@ final class TextPicker {
 
     func showMessage(in viewController: UIViewController, message: String, title: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+        let okAction = UIAlertAction(title: "Done", style: .default, handler: nil)
         alert.addAction(okAction)
         viewController.present(alert, animated: true)
     }
@@ -35,5 +35,5 @@ final class TextPicker {
         alert.addAction(doneAction)
         alert.addAction(cancelAction)
         vievController.present(alert, animated: true)
-    }
+    }  
 }
